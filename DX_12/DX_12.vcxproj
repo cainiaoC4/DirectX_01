@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{AF9234AA-1302-44FF-88B3-64F703B30C2B}</ProjectGuid>
+    <ProjectGuid>{7C4DCE7F-82A6-4F88-AAB2-8C4B2142984E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>DX02</RootNamespace>
+    <RootNamespace>DX12</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -93,7 +93,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -144,7 +144,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClInclude Include="d3dApp.h" />
+    <ClInclude Include="d3dUtil.h" />
+    <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="InitDirect3DApp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="d3dApp.cpp" />
+    <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="InitDirect3DApp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
