@@ -1,5 +1,7 @@
 #pragma once
 
+//定义若干宏，用于检查Direct3D 函数返回的HRESULT值
+
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x600
 #endif // !_WIN32_WINNT
@@ -22,6 +24,7 @@
 #include<cassert>
 
 
+//当Direct3D函数返回一个错误时，DXTrace函数显示消息框
 
 #if defined(DEBUG)|defined(DEBUG)
 

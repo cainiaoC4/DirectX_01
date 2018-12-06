@@ -177,6 +177,7 @@ void D3DApp::onResize()
 
 void D3DApp::updateScene(float dt)
 {
+	//为了测量每秒的渲染帧数（FPS），需要计算在某一特定时间段t中处理的总帧数，并存储在变量n中。得到平均FPS =n/t
 
 	static int frameCnt = 0;
 	static float t_base = 0.0f;
@@ -186,7 +187,7 @@ void D3DApp::updateScene(float dt)
 	if((mTimer.getGameTime()-t_base)>=1.0f)     //update per sec
 	{
 		float fps = (float)frameCnt;
-		float mspf = 1000.0f / fps;
+		float mspf = 1000.0f / fps;             //处理一帧的平均耗时，单位ms
 
 		std::wostringstream outs;
 		outs.precision(6);
@@ -212,7 +213,7 @@ LRESULT D3DApp::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		// WM_ACTIVATE is sent when the window is activated or deactivated.  
 		// We pause the game when the window is deactivated and unpause it 
 		// when it becomes active.  
-	case WM_ACTIVATE:
+	case WM_ACTIVATE:                                  //应用程序获得焦点或者失去焦点
 		if (LOWORD(wParam) == WA_INACTIVE)
 		{
 			mAppPaused = true;
@@ -226,26 +227,26 @@ LRESULT D3DApp::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 		// WM_SIZE is sent when the user resizes the window.  
-	case WM_SIZE:
+	case WM_SIZE:                                             //窗口大小改变消息
 		// Save the new client area dimensions.
 		mClientWidth = LOWORD(lParam);
 		mClientHeight = HIWORD(lParam);
 		if (md3dDevice)
 		{
-			if (wParam == SIZE_MINIMIZED)
+			if (wParam == SIZE_MINIMIZED)                     //最小化窗口
 			{
 				mAppPaused = true;
 				mMinimized = true;
 				mMaximized = false;
 			}
-			else if (wParam == SIZE_MAXIMIZED)
+			else if (wParam == SIZE_MAXIMIZED)                //最大化窗口
 			{
 				mAppPaused = false;
 				mMinimized = false;
 				mMaximized = true;
 				onResize();
 			}
-			else if (wParam == SIZE_RESTORED)
+			else if (wParam == SIZE_RESTORED)                 
 			{
 
 				// Restoring from minimized state?
@@ -276,6 +277,7 @@ LRESULT D3DApp::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 				else // API call such as SetWindowPos or mSwapChain->SetFullscreenState.
 				{
+
 					onResize();
 				}
 			}
@@ -386,7 +388,7 @@ void D3DApp::initDirect3D()
 	createDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
 #endif
 
-	HR(D3D10CreateDeviceAndSwapChain(
+	/*HR(D3D10CreateDeviceAndSwapChain(
 		0,
 		md3dDriverType,
 		0,
@@ -396,6 +398,43 @@ void D3DApp::initDirect3D()
 		&mSwapChain,
 		&md3dDevice
 	));
+*/
 
+	HR(D3D10CreateDevice(0, md3dDriverType, 0, createDeviceFlags, D3D10_SDK_VERSION, &md3dDevice));
+
+	IDXGIDevice* dxgiDevice = 0;
+	HR(md3dDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice));
+
+	IDXGIAdapter*dxgiAdapter = 0;
+	HR(dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgiAdapter));
+
+	IDXGIFactory*pFactory = 0;
+	//HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&pFactory));
+	HR(dxgiAdapter->GetParent(__uuidof(IDXGIFactory),(void**)&pFactory));
+
+	
+
+	
+
+	HR(pFactory->CreateSwapChain(md3dDevice, &sd, &mSwapChain));
+
+	HR(pFactory->MakeWindowAssociation(mhMainWnd, DXGI_MWA_NO_WINDOW_CHANGES));   
+
+	UINT i = 0;
+	IDXGIOutput*pOutput;
+	std::vector<IDXGIOutput*> vOutputs;
+	while (pFactory->EnumAdapters(i, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND)
+	{
+		if (dxgiAdapter->CheckInterfaceSupport(__uuidof(ID3D10Device), 0) != S_OK)
+			MessageBox(0, L"Direct3D 10 not supported", L"Support check", MB_OK);
+
+		++i;
+	}
+	//i = 0;
+	//while (dxgiAdapter->EnumOutputs(i, &pOutput) != DXGI_ERROR_NOT_FOUND)
+	//{
+	//	vOutputs.push_back(pOutput);
+	//	++i;
+	//}
 	onResize();
 }
